@@ -1,10 +1,5 @@
-use console_games::{games::guess_the_word::GuessTheWord, Play};
+use console_games::game_manager::GameManager;
 
 fn main() {
-    println!("press ctrl + c to exit\n");
-
-    loop {
-        GuessTheWord::print_intro();
-        GuessTheWord::start();
-    }
+    GameManager::start();
 }

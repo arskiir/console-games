@@ -1,13 +1,16 @@
 use crate::util::get_char_input;
 
-use std::collections::BTreeSet;
+use std::{
+    collections::BTreeSet,
+    io::{stdout, Write},
+};
 
 use crate::Play;
 
 pub struct GuessTheWord;
 
 impl Play for GuessTheWord {
-    fn start() {
+    fn start(&mut self) {
         let word = eff_wordlist::large::random_word();
         let mut unique_chars = BTreeSet::from_iter(word.chars());
         unique_chars.remove(&' ');
@@ -20,16 +23,6 @@ impl Play for GuessTheWord {
         ];
 
         loop {
-            // check for win conditions
-            if unique_chars.len() == 0 {
-                println!("You win!\nThe word is: {}\n", word);
-                break;
-            }
-            if guess_left == 0 {
-                println!("You lose!\nThe word is: {}\n", word);
-                break;
-            }
-
             // print the current game state
             for c in word.chars() {
                 if guessed_chars.contains(&c) || c == ' ' {
@@ -39,7 +32,7 @@ impl Play for GuessTheWord {
                 }
             }
             println!("\nGuesses left: {guess_left}");
-            print!("Pick one: ");
+            print!("From ");
             for c in alphabets {
                 if guessed_chars.contains(&c) {
                     print!("{}", '_');
@@ -49,6 +42,8 @@ impl Play for GuessTheWord {
                 print!(" ");
             }
             println!();
+            print!("You pick: ");
+            stdout().flush().expect("Failed to flush");
 
             let input = get_char_input();
             if guessed_chars.contains(&input) {
@@ -62,11 +57,26 @@ impl Play for GuessTheWord {
             } else {
                 guess_left -= 1;
             }
+
+            // check for win conditions
+            if unique_chars.len() == 0 {
+                println!("You win!\nThe word is: {}\n", word);
+                break;
+            }
+            if guess_left == 0 {
+                println!("You lose!\nThe word is: {}\n", word);
+                break;
+            }
+
             println!();
         }
     }
 
-    fn print_intro() {
-        println!("Welcome to Guess the Word!");
+    fn print_intro(&self) {
+        println!("Welcome to {}!", self.name());
+    }
+
+    fn name(&self) -> &'static str {
+        "Guess the Word"
     }
 }
