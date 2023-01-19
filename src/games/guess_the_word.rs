@@ -1,11 +1,8 @@
-use crate::{util::get_char_input, T};
-
+use crate::{util::get_char_input, Play};
 use std::{
     collections::BTreeSet,
     io::{stdout, Write},
 };
-
-use crate::Play;
 
 pub struct GuessTheWord;
 

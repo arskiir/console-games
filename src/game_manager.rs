@@ -1,14 +1,15 @@
 use std::io::{stdin, stdout, Write};
 
-use crate::{games::guess_the_word::GuessTheWord, Play, T};
+use crate::{games::guess_the_word::GuessTheWord, Play};
 
 pub struct GameManager;
 
 impl GameManager {
+    /// call this function to start the console game application
     pub fn start() {
         println!("press ctrl + c to exit\n");
 
-        let mut games: Vec<Box<dyn Play>> = vec![Box::new(GuessTheWord)];
+        let mut games: [Box<dyn Play>; 1] = [Box::new(GuessTheWord)];
 
         loop {
             let (game_idx_err_msg, game_idx) = match Self::select_game(&games) {
@@ -27,7 +28,7 @@ impl GameManager {
         }
     }
 
-    fn select_game(games: &Vec<Box<dyn Play>>) -> Option<(String, usize)> {
+    fn select_game(games: &[Box<dyn Play>]) -> Option<(String, usize)> {
         println!("Select your game");
         for (i, game) in games.iter().enumerate() {
             println!("{}: {}", i, game.name())
