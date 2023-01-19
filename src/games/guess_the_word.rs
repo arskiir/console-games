@@ -1,6 +1,8 @@
+use crate::util::get_char_input;
+
 use std::collections::BTreeSet;
 
-use crate::{util::get_char_input, Play};
+use crate::Play;
 
 pub struct GuessTheWord;
 
@@ -37,7 +39,7 @@ impl Play for GuessTheWord {
                 }
             }
             println!("\nGuesses left: {guess_left}");
-            print!("Pick one from: ");
+            print!("Pick one: ");
             for c in alphabets {
                 if guessed_chars.contains(&c) {
                     print!("{}", '_');
@@ -53,6 +55,7 @@ impl Play for GuessTheWord {
                 println!("You have entered a guessed character\n");
                 continue;
             }
+
             guessed_chars.push(input);
             if unique_chars.contains(&input) {
                 unique_chars.remove(&input);
