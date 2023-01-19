@@ -8,3 +8,9 @@ pub trait Play {
     fn print_intro(&self);
     fn start(&mut self);
 }
+
+pub trait T {
+    fn new() -> Self
+    where
+        Self: Sized;
+}
