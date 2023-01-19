@@ -46,6 +46,13 @@ impl Play for GuessTheWord {
             stdout().flush().expect("Failed to flush");
 
             let input = get_char_input();
+            // check for empty string
+            if input.is_none() {
+                println!();
+                continue;
+            }
+            let input = input.unwrap();
+
             if guessed_chars.contains(&input) {
                 println!("You have entered a guessed character\n");
                 continue;
