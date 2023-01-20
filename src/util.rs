@@ -36,9 +36,4 @@ impl TimeCounter {
             _ => None,
         }
     }
-
-    pub fn reset(&mut self) {
-        self.start_time = None;
-        self.stop_time = None;
-    }
 }
