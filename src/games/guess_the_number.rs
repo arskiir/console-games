@@ -15,8 +15,13 @@ impl Play for GuessTheNumber {
         let max = 100;
         let random_number = rng.gen_range(min..=max);
 
-        for guess_left in (0..=7).rev() {
-            print!("Guesses left: {guess_left}\nBetween {min} and {max}, inclusive\nYou Choose: ");
+        for i in (0..7).rev() {
+            print!(
+                "Guesses left: {}\nBetween {} and {}, inclusive\nYou Choose: ",
+                i + 1,
+                min,
+                max
+            );
             stdout().flush().expect("Failed to flush");
 
             let mut input = String::new();
@@ -40,5 +45,7 @@ impl Play for GuessTheNumber {
                 break;
             }
         }
+
+        println!("You lose!\nThe number was {random_number}\n");
     }
 }
