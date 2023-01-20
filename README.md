@@ -1,6 +1,6 @@
 # console games
 
-A hobby project for console games. There is only one game for now, but I plan to add more, hopefully 👉😌👉.
+A hobby project for console games. New games are coming, hopefully 👉😌👉.
 
 ## Usage
 
