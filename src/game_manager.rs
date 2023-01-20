@@ -1,6 +1,9 @@
 use std::io::{stdin, stdout, Write};
 
-use crate::{games::guess_the_word::GuessTheWord, Play};
+use crate::{
+    games::{guess_the_number::GuessTheNumber, guess_the_word::GuessTheWord},
+    Play,
+};
 
 pub struct GameManager;
 
@@ -9,7 +12,7 @@ impl GameManager {
     pub fn start() {
         println!("press ctrl + c to exit\n");
 
-        let mut games: [Box<dyn Play>; 1] = [Box::new(GuessTheWord)];
+        let mut games: [Box<dyn Play>; 2] = [Box::new(GuessTheWord), Box::new(GuessTheNumber)];
 
         loop {
             let (game_idx_err_msg, game_idx) = match Self::select_game(&games) {

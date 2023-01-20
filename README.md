@@ -16,7 +16,8 @@ fn main() {
 
 List of available games:
 
-- [x] Guess the Word
+[x] Guess the Word
+[x] Guess the Number
 
 ### To run an individual game
 

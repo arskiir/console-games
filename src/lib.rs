@@ -8,7 +8,7 @@ pub trait Play {
     fn name(&self) -> &'static str;
     /// print the game's intro or description before the game starts
     fn print_intro(&self) {
-        println!("Welcome to {}!", self.name());
+        println!("Welcome to {}!\n", self.name());
     }
     /// start the game and should return when the game ends
     fn start(&mut self);
