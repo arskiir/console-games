@@ -8,15 +8,20 @@ use crate::{
 pub struct GameCenter;
 
 impl GameCenter {
+    /// returns a list of all games that are available in the game center
+    pub fn games() -> [Box<dyn Play>; 3] {
+        [
+            Box::new(GuessTheWord),
+            Box::new(GuessTheNumber),
+            Box::new(WordType),
+        ]
+    }
+
     /// call this function to start the console game application
     pub fn enter() {
         println!("press ctrl + c to exit\n");
 
-        let mut games: [Box<dyn Play>; 3] = [
-            Box::new(GuessTheWord),
-            Box::new(GuessTheNumber),
-            Box::new(WordType),
-        ];
+        let mut games = Self::games();
 
         loop {
             let (game_idx_err_msg, game_idx) = match Self::select_game(&games) {
