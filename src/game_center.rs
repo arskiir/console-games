@@ -5,11 +5,11 @@ use crate::{
     Play,
 };
 
-pub struct GameManager;
+pub struct GameCenter;
 
-impl GameManager {
+impl GameCenter {
     /// call this function to start the console game application
-    pub fn start() {
+    pub fn enter() {
         println!("press ctrl + c to exit\n");
 
         let mut games: [Box<dyn Play>; 2] = [Box::new(GuessTheWord), Box::new(GuessTheNumber)];

@@ -5,10 +5,10 @@ A hobby project for console games. There is only one game for now, but I plan to
 ## Usage
 
 ```rust
-use console_games::game_manager::GameManager;
+use console_games::game_manager::GameCenter;
 
 fn main() {
-    GameManager::start();
+    GameCenter::enter();
 }
 ```
 

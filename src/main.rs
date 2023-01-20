@@ -1,5 +1,5 @@
-use console_games::game_manager::GameManager;
+use console_games::game_center::GameCenter;
 
 fn main() {
-    GameManager::start();
+    GameCenter::enter();
 }
