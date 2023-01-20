@@ -76,10 +76,6 @@ impl Play for GuessTheWord {
         }
     }
 
-    fn print_intro(&self) {
-        println!("Welcome to {}!", self.name());
-    }
-
     fn name(&self) -> &'static str {
         "Guess the Word"
     }
