@@ -5,19 +5,20 @@ A hobby project for console games. New games are coming, hopefully 👉😌👉.
 ## Usage
 
 ```rust
-use console_games::game_manager::GameCenter;
+use console_games::game_center::GameCenter;
 
 fn main() {
     GameCenter::enter();
 }
+
 ```
 
 ## Games
 
 List of available games:
 
-[x] Guess the Word
-[x] Guess the Number
+- Guess the Word  
+- Guess the Number
 
 ### To run an individual game
 
