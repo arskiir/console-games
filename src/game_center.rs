@@ -1,7 +1,7 @@
 use std::io::{stdin, stdout, Write};
 
 use crate::{
-    games::{guess_the_number::GuessTheNumber, guess_the_word::GuessTheWord},
+    games::{guess_the_number::GuessTheNumber, guess_the_word::GuessTheWord, word_type::WordType},
     Play,
 };
 
@@ -12,7 +12,11 @@ impl GameCenter {
     pub fn enter() {
         println!("press ctrl + c to exit\n");
 
-        let mut games: [Box<dyn Play>; 2] = [Box::new(GuessTheWord), Box::new(GuessTheNumber)];
+        let mut games: [Box<dyn Play>; 3] = [
+            Box::new(GuessTheWord),
+            Box::new(GuessTheNumber),
+            Box::new(WordType),
+        ];
 
         loop {
             let (game_idx_err_msg, game_idx) = match Self::select_game(&games) {
