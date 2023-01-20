@@ -1,6 +1,9 @@
 # console games
 
-A hobby project for console games. New games are coming, hopefully 🙂🙂🙂. And I'm open for contributions.
+A hobby project for console games. New games are coming, hopefully 🙂🙂🙂.
+
+Or you want to write some Rust? Help me out by adding a game of your choice!!!  
+See [Contribution](#contribution) section for more details.
 
 ## Usage
 
@@ -35,7 +38,7 @@ fn main() {
 
 ## Contribution
 
-I need your help!!! Let's grow this project together. If you have any ideas, wether it's a new game, performance improvements, etc, please open an issue or a pull request.
+I need your help!!! Let's grow this project together. If you have any ideas, wether it's a new game, performance improvements, code refactor/redesign, etc, please open an issue or a pull request.
 
 ### To create a game
 
