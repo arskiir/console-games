@@ -1,4 +1,6 @@
-pub mod game_center;
+mod game_center;
+
+pub use game_center::*;
 pub mod games;
 
 mod util;

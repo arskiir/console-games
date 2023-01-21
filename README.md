@@ -8,7 +8,7 @@ See [Contribution](#contribution) section for more details.
 ## Usage
 
 ```rust
-use console_games::game_center::GameCenter;
+use console_games::GameCenter;
 
 fn main() {
     GameCenter::enter();
@@ -27,13 +27,14 @@ List of available games:
 ### To run an individual game
 
 ```rust
-use console_games::{games::guess_the_word::GuessTheWord, Play};
+use console_games::{games::GuessTheWord, Play};
 
 fn main() {
     println!("{}", GuessTheWord.name());
     GuessTheWord.print_intro();
     GuessTheWord.start();
 }
+
 ```
 
 ## Contribution
@@ -66,7 +67,8 @@ Lastly, make the game visible in the module tree.
 // games.rs
 
 // --- snip ---
-pub mod my_game;
+mod my_game;
+pub use my_game::*;
 ```
 
 ### To add a new game to the game center
@@ -83,10 +85,10 @@ impl GameCenter {
 
     pub fn games() -> [Box<dyn Play>; 4 /* <-- change this number */] {
         [
-            Box::new(guess_the_word::GuessTheWord),
-            Box::new(guess_the_number::GuessTheNumber),
-            Box::new(word_type::WordType),
-            Box::new(my_game::MyGame), // <-- add this line
+            Box::new(GuessTheWord),
+            Box::new(GuessTheNumber),
+            Box::new(WordType),
+            Box::new(MyGame), // <-- add this line
         ]
     }
 

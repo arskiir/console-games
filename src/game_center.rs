@@ -1,9 +1,6 @@
 use std::io::{stdin, stdout, Write};
 
-use crate::{
-    games::{guess_the_number::GuessTheNumber, guess_the_word::GuessTheWord, word_type::WordType},
-    Play,
-};
+use crate::{games::*, Play};
 
 pub struct GameCenter;
 
