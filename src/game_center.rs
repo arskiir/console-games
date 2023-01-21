@@ -6,11 +6,12 @@ pub struct GameCenter;
 
 impl GameCenter {
     /// returns a list of all games that are available in the game center
-    pub fn games() -> [Box<dyn Play>; 3] {
+    pub fn games() -> [Box<dyn Play>; 4] {
         [
             Box::new(GuessTheWord),
             Box::new(GuessTheNumber),
             Box::new(WordType),
+            Box::new(FourInALine::new()),
         ]
     }
 
