@@ -5,6 +5,7 @@ use crate::Play;
 pub struct FourInALine {
     table: Option<Table>,
     turn_of: char,
+    dropped_count: usize,
 }
 
 type Table = [[char; 7]; 6];
@@ -18,6 +19,7 @@ impl FourInALine {
         Self {
             table: None,
             turn_of: PLAYER_O,
+            dropped_count: 0,
         }
     }
 
@@ -35,8 +37,10 @@ impl FourInALine {
         println!();
     }
 
-    fn init_table(&mut self) {
+    fn init(&mut self) {
         self.table = Some([[EMPTY; 7]; 6]);
+        self.turn_of = PLAYER_O;
+        self.dropped_count = 0;
     }
 
     fn col_count(&self) -> Option<usize> {
@@ -83,6 +87,7 @@ impl FourInALine {
                 let spot = &mut row[col];
                 if *spot == EMPTY {
                     *spot = self.turn_of;
+                    self.dropped_count += 1;
                     return row_idx;
                 }
             }
@@ -94,7 +99,7 @@ impl FourInALine {
         let mut consecutive: u8 = 0;
         // check row
         for spot in &self.table.unwrap()[row_idx] {
-            if let Some(value) = self.check_consecutive_spot(spot, &mut consecutive) {
+            if let Some(value) = self.check_consecutive(spot, &mut consecutive) {
                 return value;
             }
         }
@@ -102,78 +107,117 @@ impl FourInALine {
         consecutive = 0;
         // check col
         for spot in &self.table.unwrap().map(|row| row[col]) {
-            if let Some(result) = self.check_consecutive_spot(spot, &mut consecutive) {
+            if let Some(result) = self.check_consecutive(spot, &mut consecutive) {
                 return result;
             }
         }
 
-        // check diagonals
+        // check bottom left to top right diagonal
         consecutive = 0;
-        // upper left to bottom right
-        let mut row = row_idx;
-        let mut col = col;
-        loop {
-            if row == 0 || col == 0 {
-                break;
-            }
-            row -= 1;
-            col -= 1;
-        }
-        let mut ul_to_br = Vec::new();
-        loop {
-            if &row == &self.table.unwrap().len() || col == self.col_count().unwrap() {
-                break;
-            }
-            let spot = &self.table.unwrap()[row][col];
-            ul_to_br.push(*spot);
-
-            row += 1;
-            col += 1;
-        }
-        for spot in &ul_to_br {
-            if let Some(result) = self.check_consecutive_spot(spot, &mut consecutive) {
-                return result;
-            }
+        if let Some(value) = self.check_bl_to_tr(row_idx, col, &mut consecutive) {
+            return value;
         }
 
+        // check top left to bottom right diagonal
         consecutive = 0;
-        // bottom left to upper right
-        // FIXME
-        let mut row = row_idx;
-        let mut col = col;
-        loop {
-            if row == (&self.table.unwrap().len() - 1) || col == 0 {
-                break;
-            }
-            row += 1;
-            col -= 1;
-        }
-        let mut bl_to_ur = Vec::new();
-        loop {
-            if col == self.col_count().unwrap() {
-                break;
-            }
-            println!("{row}, {col}");
-            let spot = &self.table.unwrap()[row][col];
-            bl_to_ur.push(*spot);
-
-            if row == 0 {
-                break;
-            }
-
-            row -= 1;
-            col += 1;
-        }
-        for spot in &bl_to_ur {
-            if let Some(result) = self.check_consecutive_spot(spot, &mut consecutive) {
-                return result;
-            }
+        if let Some(value) = self.check_tl_to_br(row_idx, col, consecutive) {
+            return value;
         }
 
         None
     }
 
-    fn check_consecutive_spot(&self, spot: &char, consecutive: &mut u8) -> Option<Option<char>> {
+    fn check_tl_to_br(
+        &self,
+        row_idx: usize,
+        col: usize,
+        mut consecutive: u8,
+    ) -> Option<Option<char>> {
+        let mut row_idx_it = row_idx as i8;
+        let mut col_idx_it = col as i8;
+        loop {
+            if row_idx_it == *&self.table.unwrap().len() as i8
+                || col_idx_it == *&self.col_count().unwrap() as i8
+            {
+                break;
+            }
+            let spot = &self.table.unwrap()[row_idx_it as usize][col_idx_it as usize];
+            if *spot == EMPTY {
+                break;
+            }
+            if let Some(result) = self.check_consecutive(spot, &mut consecutive) {
+                return Some(result);
+            }
+            row_idx_it += 1;
+            col_idx_it += 1;
+        }
+        let mut row_idx_it = row_idx as i8 - 1;
+        let mut col_idx_it = col as i8 - 1;
+
+        // walk down first
+        // continue walk up if possible
+        loop {
+            if row_idx_it == -1 || col_idx_it == -1 {
+                break;
+            }
+            let spot = &self.table.unwrap()[row_idx_it as usize][col_idx_it as usize];
+            if *spot == EMPTY {
+                break;
+            }
+            if let Some(result) = self.check_consecutive(spot, &mut consecutive) {
+                return Some(result);
+            }
+            row_idx_it -= 1;
+            col_idx_it -= 1;
+        }
+        None
+    }
+
+    fn check_bl_to_tr(
+        &self,
+        row_idx: usize,
+        col: usize,
+        consecutive: &mut u8,
+    ) -> Option<Option<char>> {
+        let mut row_idx_it = row_idx as i8;
+        let mut col_idx_it = col as i8;
+        loop {
+            if row_idx_it == -1 || col_idx_it == self.col_count().unwrap() as i8 {
+                break;
+            }
+            let spot = &self.table.unwrap()[row_idx_it as usize][col_idx_it as usize];
+            if *spot == EMPTY {
+                break;
+            }
+            if let Some(result) = self.check_consecutive(spot, consecutive) {
+                return Some(result);
+            }
+            row_idx_it -= 1;
+            col_idx_it += 1;
+        }
+        let mut row_idx_it = row_idx as i8 + 1;
+        let mut col_idx_it = col as i8 - 1;
+
+        // walk up first
+        // continue walk down if possible
+        loop {
+            if row_idx_it == *&self.table.unwrap().len() as i8 || col_idx_it < 0 {
+                break;
+            }
+            let spot = &self.table.unwrap()[row_idx_it as usize][col_idx_it as usize];
+            if *spot == EMPTY {
+                break;
+            }
+            if let Some(result) = self.check_consecutive(spot, consecutive) {
+                return Some(result);
+            }
+            row_idx_it += 1;
+            col_idx_it -= 1;
+        }
+        None
+    }
+
+    fn check_consecutive(&self, spot: &char, consecutive: &mut u8) -> Option<Option<char>> {
         if *spot == self.turn_of {
             *consecutive += 1;
             if *consecutive == 4 {
@@ -192,7 +236,7 @@ impl Play for FourInALine {
     }
 
     fn start(&mut self) {
-        self.init_table();
+        self.init();
         loop {
             self.print_table();
 
@@ -205,6 +249,13 @@ impl Play for FourInALine {
             };
 
             let row_idx = self.drop_in_col(col);
+
+            if self.dropped_count == *&self.table.unwrap().len() * *&self.table.unwrap()[0].len() {
+                println!();
+                self.print_table();
+                println!("Draw!\n");
+                break;
+            }
 
             if let Some(player) = self.get_winner(row_idx, col) {
                 println!();
