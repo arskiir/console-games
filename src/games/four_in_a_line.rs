@@ -135,6 +135,8 @@ impl FourInALine {
     ) -> Option<Option<char>> {
         let mut row_idx_it = row_idx as i8;
         let mut col_idx_it = col as i8;
+
+        // walk down first
         loop {
             if row_idx_it == *&self.table.unwrap().len() as i8
                 || col_idx_it == *&self.col_count().unwrap() as i8
@@ -154,7 +156,6 @@ impl FourInALine {
         let mut row_idx_it = row_idx as i8 - 1;
         let mut col_idx_it = col as i8 - 1;
 
-        // walk down first
         // continue walk up if possible
         loop {
             if row_idx_it == -1 || col_idx_it == -1 {
@@ -181,6 +182,8 @@ impl FourInALine {
     ) -> Option<Option<char>> {
         let mut row_idx_it = row_idx as i8;
         let mut col_idx_it = col as i8;
+
+        // walk up first
         loop {
             if row_idx_it == -1 || col_idx_it == self.col_count().unwrap() as i8 {
                 break;
@@ -198,7 +201,6 @@ impl FourInALine {
         let mut row_idx_it = row_idx as i8 + 1;
         let mut col_idx_it = col as i8 - 1;
 
-        // walk up first
         // continue walk down if possible
         loop {
             if row_idx_it == *&self.table.unwrap().len() as i8 || col_idx_it < 0 {
