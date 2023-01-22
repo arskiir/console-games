@@ -23,6 +23,7 @@ List of available games:
 - Guess the Word
 - Guess the Number
 - Word Type
+- Four in A Line
 
 ### To run an individual game
 
@@ -83,11 +84,12 @@ Add the game to the return value of `GameCenter::games` method.
 impl GameCenter {
     // --- snip ---
 
-    pub fn games() -> [Box<dyn Play>; 4 /* <-- change this number */] {
+    pub fn games() -> [Box<dyn Play>; 5 /* <-- update this number */] {
         [
             Box::new(GuessTheWord),
             Box::new(GuessTheNumber),
             Box::new(WordType),
+            Box::new(FourInALine::new()),
             Box::new(MyGame), // <-- add this line
         ]
     }
