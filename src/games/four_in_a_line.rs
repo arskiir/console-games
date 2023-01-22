@@ -78,7 +78,7 @@ impl FourInALine {
     }
 
     fn is_col_ok(&self, col: usize) -> bool {
-        col < (self.col_count().unwrap() - 1) && self.table.unwrap()[0][col] == EMPTY
+        col < self.col_count().unwrap() && self.table.unwrap()[0][col] == EMPTY
     }
 
     fn drop_in_col(&mut self, col: usize) -> usize {
