@@ -1,11 +1,14 @@
 use std::io::{stdin, stdout, Write};
 
+use console::Term;
+
 use crate::Play;
 
 pub struct FourInALine {
     table: Option<Table>,
     turn_of: char,
     dropped_count: usize,
+    term: Option<Term>,
 }
 
 type Table = [[char; 7]; 6];
@@ -20,6 +23,7 @@ impl FourInALine {
             table: None,
             turn_of: PLAYER_O,
             dropped_count: 0,
+            term: None,
         }
     }
 
@@ -41,6 +45,7 @@ impl FourInALine {
         self.table = Some([[EMPTY; 7]; 6]);
         self.turn_of = PLAYER_O;
         self.dropped_count = 0;
+        self.term = Some(Term::stdout());
     }
 
     fn col_count(&self) -> Option<usize> {
@@ -230,6 +235,14 @@ impl FourInALine {
         }
         None
     }
+
+    fn clear_screen(&mut self) {
+        self.term
+            .as_ref()
+            .unwrap()
+            .clear_screen()
+            .expect("Failed to clear screen");
+    }
 }
 
 impl Play for FourInALine {
@@ -240,6 +253,7 @@ impl Play for FourInALine {
     fn start(&mut self) {
         self.init();
         loop {
+            self.clear_screen();
             self.print_table();
 
             print!("Play's {} turn: ", self.turn_of);
@@ -253,21 +267,20 @@ impl Play for FourInALine {
             let row_idx = self.drop_in_col(col);
 
             if self.dropped_count == *&self.table.unwrap().len() * *&self.table.unwrap()[0].len() {
-                println!();
+                self.clear_screen();
                 self.print_table();
                 println!("Draw!\n");
                 break;
             }
 
             if let Some(player) = self.get_winner(row_idx, col) {
-                println!();
+                self.clear_screen();
                 self.print_table();
                 println!("Player {player} wins!\n");
                 break;
             }
 
             self.change_turn();
-            println!();
         }
     }
 }

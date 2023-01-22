@@ -1,3 +1,5 @@
+use console::{style, Term};
+
 use crate::{util::get_char_input, Play};
 use std::{
     collections::BTreeSet,
@@ -19,6 +21,9 @@ impl Play for GuessTheWord {
             'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
         ];
 
+        let term = Term::stdout();
+        term.clear_screen().expect("Failed to clear screen");
+
         loop {
             // print the current game state
             for c in word.chars() {
@@ -28,7 +33,7 @@ impl Play for GuessTheWord {
                     print!("{}", '_');
                 }
             }
-            println!("\nGuesses left: {guess_left}");
+            println!("\nGuesses left: {}", style(guess_left).red());
             print!("From ");
             for c in alphabets {
                 if guessed_chars.contains(&c) {
@@ -45,12 +50,13 @@ impl Play for GuessTheWord {
             let input = get_char_input();
             // check for empty string
             if input.is_none() {
-                println!();
+                term.clear_screen().expect("Failed to clear screen");
                 continue;
             }
             let input = input.unwrap();
 
             if guessed_chars.contains(&input) {
+                term.clear_screen().expect("Failed to clear screen");
                 println!("You have entered a guessed character\n");
                 continue;
             }
@@ -73,6 +79,7 @@ impl Play for GuessTheWord {
             }
 
             println!();
+            term.clear_screen().expect("Failed to clear screen");
         }
     }
 

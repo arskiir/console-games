@@ -1,5 +1,7 @@
 use std::io::{stdin, stdout, Write};
 
+use console::{style, Term};
+
 use crate::{games::*, Play};
 
 pub struct GameCenter;
@@ -17,11 +19,15 @@ impl GameCenter {
 
     /// call this function to start the console game application
     pub fn enter() {
-        println!("press ctrl + c to exit\n");
+        let term = Term::stdout();
+        term.clear_screen().expect("Failed to clear screen");
+
+        println!("{}\n", style("press ctrl + c to exit").red());
 
         let mut games = Self::games();
 
         loop {
+            term.set_title("Console Games");
             let (game_idx_err_msg, game_idx) = match Self::select_game(&games) {
                 Some(value) => value,
                 None => continue,
@@ -30,6 +36,9 @@ impl GameCenter {
 
             match games.get_mut(game_idx) {
                 Some(game) => {
+                    term.set_title(game.name());
+                    term.clear_screen().expect("Failed to clear screen");
+
                     game.print_intro();
                     game.start();
                 }
@@ -39,7 +48,7 @@ impl GameCenter {
     }
 
     fn select_game(games: &[Box<dyn Play>]) -> Option<(String, usize)> {
-        println!("Select your game");
+        println!("{}", style("Select your game").cyan());
         for (i, game) in games.iter().enumerate() {
             println!("{}: {}", i, game.name())
         }

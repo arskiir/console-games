@@ -1,5 +1,6 @@
 mod game_center;
 
+use console::style;
 pub use game_center::*;
 pub mod games;
 
@@ -12,7 +13,7 @@ pub trait Play {
 
     /// print the game's intro or description before the game starts
     fn print_intro(&self) {
-        println!("Welcome to {}!\n", self.name());
+        println!("Welcome to {}!\n", style(self.name()).green());
     }
 
     /// start the game and should return when the game ends

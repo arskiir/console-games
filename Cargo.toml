@@ -1,6 +1,6 @@
 [package]
 name = "console-games"
-version = "0.1.10"
+version = "0.1.11"
 edition = "2021"
 description = "A collection of console games written in Rust"
 license = "MIT OR Apache-2.0"
@@ -10,5 +10,6 @@ keywords = ["game", "console"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
 [dependencies]
+console = "0.15.5"
 eff-wordlist = "1.0.2"
 rand = "0.8.5"

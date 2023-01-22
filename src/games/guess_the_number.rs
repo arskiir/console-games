@@ -1,4 +1,5 @@
 use crate::Play;
+use console::Term;
 use rand::Rng;
 use std::io::{stdin, stdout, Write};
 
@@ -14,6 +15,8 @@ impl Play for GuessTheNumber {
         let min = 0;
         let max = 100;
         let random_number = rng.gen_range(min..=max);
+
+        let term = Term::stdout();
 
         for i in (0..7).rev() {
             print!(
@@ -36,10 +39,11 @@ impl Play for GuessTheNumber {
                 Err(_) => continue,
             };
 
+            term.clear_screen().expect("Failed to clear screen");
             if input < random_number {
-                println!("Too low!\n");
+                println!("{input}, Too low!\n");
             } else if input > random_number {
-                println!("Too high!\n");
+                println!("{input}, Too high!\n");
             } else {
                 println!("You win!\n");
                 break;
