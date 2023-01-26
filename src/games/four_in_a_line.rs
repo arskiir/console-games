@@ -17,8 +17,8 @@ const EMPTY: char = '_';
 const PLAYER_O: char = 'O';
 const PLAYER_X: char = 'X';
 
-impl FourInALine {
-    pub fn new() -> Self {
+impl Default for FourInALine {
+    fn default() -> Self {
         Self {
             table: None,
             turn_of: PLAYER_O,
@@ -26,7 +26,9 @@ impl FourInALine {
             term: None,
         }
     }
+}
 
+impl FourInALine {
     fn print_table(&self) {
         for row in self.table.unwrap() {
             print!("|");
