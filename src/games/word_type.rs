@@ -44,10 +44,7 @@ impl Play for WordType {
         stdin().read_line(&mut typed).expect("Failed to read input");
         timer.stop();
 
-        let correct_count: u8 = words
-            .iter()
-            .map(|word| if typed.contains(word) { 1 } else { 0 })
-            .sum();
+        let correct_count: u8 = words.iter().map(|word| typed.contains(word) as u8).sum();
 
         let wpm = COUNT as f32 / (timer.duration().unwrap().as_secs_f32() / 60.0);
 

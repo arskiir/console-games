@@ -1,7 +1,10 @@
 use crate::Play;
 use console::Term;
 use rand::Rng;
-use std::io::{stdin, stdout, Write};
+use std::{
+    cmp::Ordering,
+    io::{stdin, stdout, Write},
+};
 
 pub struct GuessTheNumber;
 
@@ -31,7 +34,7 @@ impl Play for GuessTheNumber {
             stdin().read_line(&mut input).expect("Failed to read input");
 
             let input = input.trim();
-            if input == "" {
+            if input.is_empty() {
                 continue;
             }
             let input: u8 = match input.parse() {
@@ -40,13 +43,14 @@ impl Play for GuessTheNumber {
             };
 
             term.clear_screen().expect("Failed to clear screen");
-            if input < random_number {
-                println!("{input}, Too low!\n");
-            } else if input > random_number {
-                println!("{input}, Too high!\n");
-            } else {
-                println!("You win!\n");
-                break;
+
+            match input.cmp(&random_number) {
+                Ordering::Less => println!("{input}, Too low!\n"),
+                Ordering::Greater => println!("{input}, Too high!\n"),
+                Ordering::Equal => {
+                    println!("You win!\n");
+                    break;
+                }
             }
         }
 

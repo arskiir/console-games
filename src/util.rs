@@ -3,7 +3,7 @@ use std::time::{Duration, Instant};
 
 pub fn get_char_input() -> Option<char> {
     let mut input = String::new();
-    while input == "" {
+    while input.is_empty() {
         stdin().read_line(&mut input).expect("Failed to read input");
     }
     input.trim().chars().next()

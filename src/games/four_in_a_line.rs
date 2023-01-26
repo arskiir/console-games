@@ -51,10 +51,7 @@ impl FourInALine {
     }
 
     fn col_count(&self) -> Option<usize> {
-        match self.table {
-            Some(table) => Some(table[0].len()),
-            None => None,
-        }
+        self.table.map(|table| table[0].len())
     }
 
     fn change_turn(&mut self) {
@@ -68,7 +65,7 @@ impl FourInALine {
     fn get_col_input(&self) -> Option<usize> {
         let mut input = String::new();
         stdin().read_line(&mut input).expect("Failed to read input");
-        if input == "" {
+        if input.is_empty() {
             return None;
         }
         match input.trim().parse::<usize>() {
@@ -145,8 +142,8 @@ impl FourInALine {
 
         // walk down first
         loop {
-            if row_idx_it == *&self.table.unwrap().len() as i8
-                || col_idx_it == *&self.col_count().unwrap() as i8
+            if row_idx_it == self.table.unwrap().len() as i8
+                || col_idx_it == self.col_count().unwrap() as i8
             {
                 break;
             }
@@ -210,7 +207,7 @@ impl FourInALine {
 
         // continue walk down if possible
         loop {
-            if row_idx_it == *&self.table.unwrap().len() as i8 || col_idx_it < 0 {
+            if row_idx_it == self.table.unwrap().len() as i8 || col_idx_it < 0 {
                 break;
             }
             let spot = &self.table.unwrap()[row_idx_it as usize][col_idx_it as usize];
@@ -268,7 +265,7 @@ impl Play for FourInALine {
 
             let row_idx = self.drop_in_col(col);
 
-            if self.dropped_count == *&self.table.unwrap().len() * *&self.table.unwrap()[0].len() {
+            if self.dropped_count == self.table.unwrap().len() * self.table.unwrap()[0].len() {
                 self.clear_screen();
                 self.print_table();
                 println!("Draw!\n");

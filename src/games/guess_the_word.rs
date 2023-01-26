@@ -30,14 +30,14 @@ impl Play for GuessTheWord {
                 if guessed_chars.contains(&c) || c == ' ' {
                     print!("{}", c);
                 } else {
-                    print!("{}", '_');
+                    print!("_")
                 }
             }
             println!("\nGuesses left: {}", style(guess_left).red());
             print!("From ");
             for c in alphabets {
                 if guessed_chars.contains(&c) {
-                    print!("{}", '_');
+                    print!("_")
                 } else {
                     print!("{}", c);
                 }
@@ -69,7 +69,7 @@ impl Play for GuessTheWord {
             }
 
             // check for win conditions
-            if unique_chars.len() == 0 {
+            if unique_chars.is_empty() {
                 println!("You win!\nThe word is: {}\n", word);
                 break;
             }
