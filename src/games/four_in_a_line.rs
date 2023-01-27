@@ -96,7 +96,8 @@ impl FourInALine {
                 }
             }
         }
-        panic!("{col} should be validated first");
+
+        unreachable!("col {col} should be validated first");
     }
 
     fn get_winner(&self, row_idx: usize, col: usize) -> Option<char> {
