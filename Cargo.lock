@@ -53,7 +53,7 @@ dependencies = [
 
 [[package]]
 name = "console-games"
-version = "0.1.11"
+version = "0.1.12"
 dependencies = [
  "console",
  "eff-wordlist",

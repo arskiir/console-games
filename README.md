@@ -89,7 +89,7 @@ impl GameCenter {
             Box::new(GuessTheWord),
             Box::new(GuessTheNumber),
             Box::new(WordType),
-            Box::new(FourInALine::new()),
+            Box::<FourInALine>::default(),
             Box::new(MyGame), // <-- add this line
         ]
     }
