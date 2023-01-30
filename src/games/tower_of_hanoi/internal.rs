@@ -5,7 +5,6 @@ use std::{
 mod error;
 
 const POLE_COUNT: usize = 3;
-const MAX_DISK_COUNT: usize = 3;
 
 struct Disk {
     size: usize,
@@ -17,8 +16,6 @@ struct Pole {
 
 impl Pole {
     pub(super) fn build(disks_count: usize) -> Self {
-        assert!(disks_count <= MAX_DISK_COUNT);
-
         let mut disks = Vec::with_capacity(disks_count);
         for size in (1..=disks_count).rev() {
             disks.push(Disk { size });
@@ -30,6 +27,7 @@ impl Pole {
 
 pub(super) struct TowerOfHanoi {
     poles: [Pole; POLE_COUNT],
+    disk_count: usize,
 }
 
 pub(super) struct PromptDiskMoveResult {
@@ -38,10 +36,17 @@ pub(super) struct PromptDiskMoveResult {
 }
 
 impl TowerOfHanoi {
+    pub(super) fn new(disk_count: usize) -> Self {
+        Self {
+            poles: [Pole::build(disk_count), Pole::build(0), Pole::build(0)],
+            disk_count,
+        }
+    }
+
     /// print the poles and pole numbers
     pub(super) fn render(&self) {
         // print to poles
-        for i in (0..MAX_DISK_COUNT).rev() {
+        for i in (0..self.disk_count).rev() {
             for pole in self.poles.iter() {
                 if let Some(disk) = pole.disks.get(i) {
                     print!("|{}|", disk.size);
@@ -96,14 +101,6 @@ impl TowerOfHanoi {
 
     pub(super) fn win(&self) -> bool {
         let disks = &self.poles[POLE_COUNT - 1].disks;
-        disks.len() == MAX_DISK_COUNT && disks.windows(2).all(|w| w[0].size > w[1].size)
-    }
-}
-
-impl Default for TowerOfHanoi {
-    fn default() -> Self {
-        Self {
-            poles: [Pole::build(MAX_DISK_COUNT), Pole::build(0), Pole::build(0)],
-        }
+        disks.len() == self.disk_count && disks.windows(2).all(|w| w[0].size > w[1].size)
     }
 }
