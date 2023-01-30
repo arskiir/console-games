@@ -31,8 +31,10 @@ impl Pole {
     }
 }
 
-pub struct TowerOfHanoi {
-    poles: Option<[Pole; POLE_COUNT]>,
+pub struct TowerOfHanoi;
+
+struct TowerOfHanoiImpl {
+    poles: [Pole; POLE_COUNT],
 }
 
 struct PromptDiskMoveResult {
@@ -68,13 +70,12 @@ impl error::Error for ParseDiskMoveError {
     }
 }
 
-impl TowerOfHanoi {
+impl TowerOfHanoiImpl {
     /// print the poles and pole numbers
     fn render(&self) {
         // print to poles
-        let poles = self.poles.as_ref().unwrap();
         for i in (0..MAX_DISK_COUNT).rev() {
-            for pole in poles {
+            for pole in self.poles.iter() {
                 if let Some(disk) = pole.disks.get(i) {
                     print!("|{}|", disk.size);
                 } else {
@@ -97,7 +98,7 @@ impl TowerOfHanoi {
         stdin().read_line(&mut input)?;
         let mut from: usize = input.trim().parse()?;
         from -= 1;
-        if self.poles.as_ref().unwrap().get(from).is_none() {
+        if self.poles.get(from).is_none() {
             return Err(Box::new(ParseDiskMoveError::new(from)));
         }
 
@@ -108,7 +109,7 @@ impl TowerOfHanoi {
         stdin().read_line(&mut input)?;
         let mut to: usize = input.trim().parse()?;
         to -= 1;
-        if self.poles.as_ref().unwrap().get(to).is_none() {
+        if self.poles.get(to).is_none() {
             Err(Box::new(ParseDiskMoveError::new(to)))
         } else {
             Ok(PromptDiskMoveResult { from, to })
@@ -117,7 +118,7 @@ impl TowerOfHanoi {
 
     /// move a disk from a pole to another pole
     fn move_disk(&mut self, from: usize, to: usize) -> Result<(), &'static str> {
-        let poles = self.poles.as_mut().unwrap();
+        let poles = self.poles.as_mut();
         if let Some(disk) = poles[from].disks.pop() {
             poles[to].disks.push(disk);
             Ok(())
@@ -127,22 +128,16 @@ impl TowerOfHanoi {
     }
 
     fn check_win(&self) -> bool {
-        let disks = &self
-            .poles
-            .as_ref()
-            .unwrap()
-            .get(POLE_COUNT - 1)
-            .unwrap()
-            .disks;
+        let disks = &self.poles.get(POLE_COUNT - 1).unwrap().disks;
         disks.len() == MAX_DISK_COUNT && disks.windows(2).all(|w| w[0].size > w[1].size)
     }
 }
 
-impl Default for TowerOfHanoi {
+impl Default for TowerOfHanoiImpl {
     fn default() -> Self {
-        let mut game = Self { poles: None };
-        game.prepare();
-        game
+        Self {
+            poles: [Pole::build(MAX_DISK_COUNT), Pole::build(0), Pole::build(0)],
+        }
     }
 }
 
@@ -151,18 +146,15 @@ impl Play for TowerOfHanoi {
         "Tower of Hanoi"
     }
 
-    fn prepare(&mut self) {
-        self.poles = Some([Pole::build(MAX_DISK_COUNT), Pole::build(0), Pole::build(0)]);
-    }
-
-    fn start(&mut self) {
+    fn start(&self) {
+        let mut game = TowerOfHanoiImpl::default();
         let term = Term::stdout();
 
         loop {
-            self.render();
+            game.render();
 
-            if let Ok(PromptDiskMoveResult { from, to }) = self.prompt_disk_move() {
-                if self.move_disk(from, to).is_err() {
+            if let Ok(PromptDiskMoveResult { from, to }) = game.prompt_disk_move() {
+                if game.move_disk(from, to).is_err() {
                     term.clear_screen().expect("Failed to clear screen");
                     continue;
                 }
@@ -171,16 +163,14 @@ impl Play for TowerOfHanoi {
                 continue;
             }
 
-            if self.check_win() {
+            if game.check_win() {
                 term.clear_screen().expect("Failed to clear screen");
-                self.render();
+                game.render();
                 println!("You win!\n");
                 break;
             }
 
             term.clear_screen().expect("Failed to clear screen");
         }
-
-        self.prepare();
     }
 }

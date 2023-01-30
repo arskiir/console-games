@@ -4,11 +4,13 @@ use console::Term;
 
 use crate::Play;
 
-pub struct FourInALine {
-    table: Option<Table>,
+pub struct FourInALine;
+
+struct FourInALineImpl {
+    table: Table,
     turn_of: char,
     dropped_count: usize,
-    term: Option<Term>,
+    term: Term,
 }
 
 type Table = [[char; 7]; 6];
@@ -17,34 +19,34 @@ const EMPTY: char = '_';
 const PLAYER_O: char = 'O';
 const PLAYER_X: char = 'X';
 
-impl Default for FourInALine {
+impl Default for FourInALineImpl {
     fn default() -> Self {
         Self {
-            table: None,
+            table: [[EMPTY; 7]; 6],
             turn_of: PLAYER_O,
             dropped_count: 0,
-            term: None,
+            term: Term::stdout(),
         }
     }
 }
 
-impl FourInALine {
+impl FourInALineImpl {
     fn print_table(&self) {
-        for row in self.table.unwrap() {
+        for row in self.table.iter() {
             print!("|");
             for spot in row {
                 print!(" {} |", spot);
             }
             println!();
         }
-        for i in 1..=self.col_count().unwrap() {
+        for i in 1..=self.col_count() {
             print!("  {} ", i);
         }
         println!();
     }
 
-    fn col_count(&self) -> Option<usize> {
-        self.table.map(|table| table[0].len())
+    fn col_count(&self) -> usize {
+        self.table[0].len()
     }
 
     fn change_turn(&mut self) {
@@ -75,18 +77,16 @@ impl FourInALine {
     }
 
     fn is_col_ok(&self, col: usize) -> bool {
-        col < self.col_count().unwrap() && self.table.unwrap()[0][col] == EMPTY
+        col < self.col_count() && self.table[0][col] == EMPTY
     }
 
     fn drop_in_col(&mut self, col: usize) -> usize {
-        if let Some(table) = &mut self.table {
-            for (row_idx, row) in table.iter_mut().enumerate().rev() {
-                let spot = &mut row[col];
-                if *spot == EMPTY {
-                    *spot = self.turn_of;
-                    self.dropped_count += 1;
-                    return row_idx;
-                }
+        for (row_idx, row) in &mut self.table.iter_mut().enumerate().rev() {
+            let spot = &mut row[col];
+            if *spot == EMPTY {
+                *spot = self.turn_of;
+                self.dropped_count += 1;
+                return row_idx;
             }
         }
 
@@ -96,7 +96,7 @@ impl FourInALine {
     fn get_winner(&self, row_idx: usize, col: usize) -> Option<char> {
         let mut consecutive: u8 = 0;
         // check row
-        for spot in &self.table.unwrap()[row_idx] {
+        for spot in &self.table[row_idx] {
             if let Some(value) = self.check_consecutive(spot, &mut consecutive) {
                 return value;
             }
@@ -104,7 +104,7 @@ impl FourInALine {
 
         consecutive = 0;
         // check col
-        for spot in &self.table.unwrap().map(|row| row[col]) {
+        for spot in &self.table.map(|row| row[col]) {
             if let Some(result) = self.check_consecutive(spot, &mut consecutive) {
                 return result;
             }
@@ -136,12 +136,10 @@ impl FourInALine {
 
         // walk down first
         loop {
-            if row_idx_it == self.table.unwrap().len() as i8
-                || col_idx_it == self.col_count().unwrap() as i8
-            {
+            if row_idx_it == self.table.len() as i8 || col_idx_it == self.col_count() as i8 {
                 break;
             }
-            let spot = &self.table.unwrap()[row_idx_it as usize][col_idx_it as usize];
+            let spot = &self.table[row_idx_it as usize][col_idx_it as usize];
             if *spot == EMPTY {
                 break;
             }
@@ -159,7 +157,7 @@ impl FourInALine {
             if row_idx_it == -1 || col_idx_it == -1 {
                 break;
             }
-            let spot = &self.table.unwrap()[row_idx_it as usize][col_idx_it as usize];
+            let spot = &self.table[row_idx_it as usize][col_idx_it as usize];
             if *spot == EMPTY {
                 break;
             }
@@ -183,10 +181,10 @@ impl FourInALine {
 
         // walk up first
         loop {
-            if row_idx_it == -1 || col_idx_it == self.col_count().unwrap() as i8 {
+            if row_idx_it == -1 || col_idx_it == self.col_count() as i8 {
                 break;
             }
-            let spot = &self.table.unwrap()[row_idx_it as usize][col_idx_it as usize];
+            let spot = &self.table[row_idx_it as usize][col_idx_it as usize];
             if *spot == EMPTY {
                 break;
             }
@@ -201,10 +199,10 @@ impl FourInALine {
 
         // continue walk down if possible
         loop {
-            if row_idx_it == self.table.unwrap().len() as i8 || col_idx_it < 0 {
+            if row_idx_it == self.table.len() as i8 || col_idx_it < 0 {
                 break;
             }
-            let spot = &self.table.unwrap()[row_idx_it as usize][col_idx_it as usize];
+            let spot = &self.table[row_idx_it as usize][col_idx_it as usize];
             if *spot == EMPTY {
                 break;
             }
@@ -230,11 +228,7 @@ impl FourInALine {
     }
 
     fn clear_screen(&mut self) {
-        self.term
-            .as_ref()
-            .unwrap()
-            .clear_screen()
-            .expect("Failed to clear screen");
+        self.term.clear_screen().expect("Failed to clear screen");
     }
 }
 
@@ -243,45 +237,38 @@ impl Play for FourInALine {
         "Four in A Row"
     }
 
-    fn prepare(&mut self) {
-        self.table = Some([[EMPTY; 7]; 6]);
-        self.turn_of = PLAYER_O;
-        self.dropped_count = 0;
-        self.term = Some(Term::stdout());
-    }
+    fn start(&self) {
+        let mut game = FourInALineImpl::default();
 
-    fn start(&mut self) {
         loop {
-            self.clear_screen();
-            self.print_table();
+            game.clear_screen();
+            game.print_table();
 
-            print!("Play's {} turn: ", self.turn_of);
+            print!("Play's {} turn: ", game.turn_of);
             stdout().flush().expect("Failed to flush");
 
-            let col = match self.get_col_input() {
+            let col = match game.get_col_input() {
                 Some(col) => col,
                 None => continue,
             };
 
-            let row_idx = self.drop_in_col(col);
+            let row_idx = game.drop_in_col(col);
 
-            if self.dropped_count == self.table.unwrap().len() * self.table.unwrap()[0].len() {
-                self.clear_screen();
-                self.print_table();
+            if game.dropped_count == game.table.len() * game.table[0].len() {
+                game.clear_screen();
+                game.print_table();
                 println!("Draw!\n");
                 break;
             }
 
-            if let Some(player) = self.get_winner(row_idx, col) {
-                self.clear_screen();
-                self.print_table();
+            if let Some(player) = game.get_winner(row_idx, col) {
+                game.clear_screen();
+                game.print_table();
                 println!("Player {player} wins!\n");
                 break;
             }
 
-            self.change_turn();
+            game.change_turn();
         }
-
-        self.prepare();
     }
 }

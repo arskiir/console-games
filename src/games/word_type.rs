@@ -12,7 +12,7 @@ impl Play for WordType {
         "Word Type"
     }
 
-    fn start(&mut self) {
+    fn start(&self) {
         let mut timer = TimeCounter::new();
 
         const COUNT: usize = 10;

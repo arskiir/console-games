@@ -13,8 +13,8 @@ impl GameCenter {
             Box::new(GuessTheWord),
             Box::new(GuessTheNumber),
             Box::new(WordType),
-            Box::<FourInALine>::default(),
-            Box::<TowerOfHanoi>::default(),
+            Box::new(FourInALine),
+            Box::new(TowerOfHanoi),
         ]
     }
 
@@ -41,7 +41,6 @@ impl GameCenter {
                     term.clear_screen().expect("Failed to clear screen");
 
                     game.print_intro();
-                    game.prepare();
                     game.start();
                 }
                 None => println!("{}", &game_idx_err_msg),

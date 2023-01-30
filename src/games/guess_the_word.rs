@@ -9,7 +9,7 @@ use std::{
 pub struct GuessTheWord;
 
 impl Play for GuessTheWord {
-    fn start(&mut self) {
+    fn start(&self) {
         let word = eff_wordlist::large::random_word();
         let mut unique_chars = BTreeSet::from_iter(word.chars());
         unique_chars.remove(&' ');

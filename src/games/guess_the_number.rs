@@ -13,7 +13,7 @@ impl Play for GuessTheNumber {
         "Guess the Number"
     }
 
-    fn start(&mut self) {
+    fn start(&self) {
         let mut rng = rand::thread_rng();
         let min = 0;
         let max = 100;
