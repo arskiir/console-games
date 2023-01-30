@@ -1,6 +1,6 @@
 [package]
 name = "console-games"
-version = "0.1.12"
+version = "1.0.0"
 edition = "2021"
 description = "A collection of console games written in Rust"
 license = "MIT OR Apache-2.0"

@@ -1,9 +1,7 @@
 mod game_center;
-
 use console::style;
 pub use game_center::*;
 pub mod games;
-
 mod util;
 
 /// The main trait to classify a struct as a playable game.
@@ -16,7 +14,7 @@ pub trait Play {
         println!("Welcome to {}!\n", style(self.name()).green());
     }
 
-    /// start the game
-    /// the game state should be exclusively local to this function
+    /// start the game.
+    /// The game state should be exclusively local to this function
     fn start(&self);
 }

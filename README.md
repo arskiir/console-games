@@ -24,6 +24,7 @@ List of available games:
 - Guess the Number
 - Word Type
 - Four in A Line
+- Tower of Hanoi
 
 ### To run an individual game
 
@@ -56,10 +57,18 @@ impl Play for MyGame {
         "My Game"
     }
 
-    fn start(&mut self) {
-        println!("Starting my game");
+    fn start(&self) {
+        // create the internal game instance local to this method
+        let game = MyGameImpl::new();
+        game.start();
     }
 }
+
+struct MyGameImpl {
+    // --- snip ---
+}
+
+// --- snip ---
 ```
 
 Lastly, make the game visible in the module tree.
@@ -89,7 +98,7 @@ impl GameCenter {
             Box::new(GuessTheWord),
             Box::new(GuessTheNumber),
             Box::new(WordType),
-            Box::<FourInALine>::default(),
+            // -- snip --
             Box::new(MyGame), // <-- add this line
         ]
     }
