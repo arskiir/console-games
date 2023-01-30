@@ -16,6 +16,9 @@ pub trait Play {
         println!("Welcome to {}!\n", style(self.name()).green());
     }
 
-    /// start the game and should return when the game ends
+    /// set the game's default settings if necessary
+    fn prepare(&mut self) {}
+
+    /// start the game
     fn start(&mut self);
 }

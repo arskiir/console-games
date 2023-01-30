@@ -43,13 +43,6 @@ impl FourInALine {
         println!();
     }
 
-    fn init(&mut self) {
-        self.table = Some([[EMPTY; 7]; 6]);
-        self.turn_of = PLAYER_O;
-        self.dropped_count = 0;
-        self.term = Some(Term::stdout());
-    }
-
     fn col_count(&self) -> Option<usize> {
         self.table.map(|table| table[0].len())
     }
@@ -250,8 +243,14 @@ impl Play for FourInALine {
         "Four in A Row"
     }
 
+    fn prepare(&mut self) {
+        self.table = Some([[EMPTY; 7]; 6]);
+        self.turn_of = PLAYER_O;
+        self.dropped_count = 0;
+        self.term = Some(Term::stdout());
+    }
+
     fn start(&mut self) {
-        self.init();
         loop {
             self.clear_screen();
             self.print_table();
@@ -282,5 +281,7 @@ impl Play for FourInALine {
 
             self.change_turn();
         }
+
+        self.prepare();
     }
 }

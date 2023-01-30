@@ -41,6 +41,7 @@ impl GameCenter {
                     term.clear_screen().expect("Failed to clear screen");
 
                     game.print_intro();
+                    game.prepare();
                     game.start();
                 }
                 None => println!("{}", &game_idx_err_msg),

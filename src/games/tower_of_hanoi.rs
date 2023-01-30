@@ -8,13 +8,15 @@ use console::Term;
 use crate::Play;
 
 const POLE_COUNT: usize = 3;
-const MAX_DISK_COUNT: usize = 5;
+const MAX_DISK_COUNT: usize = 3;
 
 struct Disk {
     size: usize,
 }
 
-struct Pole(Vec<Disk>);
+struct Pole {
+    disks: Vec<Disk>,
+}
 
 impl Pole {
     fn build(disks_count: usize) -> Self {
@@ -25,7 +27,7 @@ impl Pole {
             disks.push(Disk { size });
         }
 
-        Self(disks)
+        Self { disks }
     }
 }
 
@@ -73,7 +75,7 @@ impl TowerOfHanoi {
         let poles = self.poles.as_ref().unwrap();
         for i in (0..MAX_DISK_COUNT).rev() {
             for pole in poles {
-                if let Some(disk) = pole.0.get(i) {
+                if let Some(disk) = pole.disks.get(i) {
                     print!("|{}|", disk.size);
                 } else {
                     print!("| |");
@@ -116,8 +118,8 @@ impl TowerOfHanoi {
     /// move a disk from a pole to another pole
     fn move_disk(&mut self, from: usize, to: usize) -> Result<(), &'static str> {
         let poles = self.poles.as_mut().unwrap();
-        if let Some(disk) = poles[from].0.pop() {
-            poles[to].0.push(disk);
+        if let Some(disk) = poles[from].disks.pop() {
+            poles[to].disks.push(disk);
             Ok(())
         } else {
             Err("This pole has no disk")
@@ -125,25 +127,32 @@ impl TowerOfHanoi {
     }
 
     fn check_win(&self) -> bool {
-        let last_pole = self.poles.as_ref().unwrap().get(POLE_COUNT - 1).unwrap();
-        if last_pole.0.len() != MAX_DISK_COUNT {
-            return false;
-        }
-        last_pole.0.windows(2).all(|w| w[0].size > w[1].size)
+        let disks = &self
+            .poles
+            .as_ref()
+            .unwrap()
+            .get(POLE_COUNT - 1)
+            .unwrap()
+            .disks;
+        disks.len() == MAX_DISK_COUNT && disks.windows(2).all(|w| w[0].size > w[1].size)
     }
 }
 
 impl Default for TowerOfHanoi {
     fn default() -> Self {
-        Self {
-            poles: Some([Pole::build(MAX_DISK_COUNT), Pole::build(0), Pole::build(0)]),
-        }
+        let mut game = Self { poles: None };
+        game.prepare();
+        game
     }
 }
 
 impl Play for TowerOfHanoi {
     fn name(&self) -> &'static str {
         "Tower of Hanoi"
+    }
+
+    fn prepare(&mut self) {
+        self.poles = Some([Pole::build(MAX_DISK_COUNT), Pole::build(0), Pole::build(0)]);
     }
 
     fn start(&mut self) {
@@ -171,5 +180,7 @@ impl Play for TowerOfHanoi {
 
             term.clear_screen().expect("Failed to clear screen");
         }
+
+        self.prepare();
     }
 }
