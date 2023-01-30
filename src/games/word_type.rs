@@ -49,8 +49,7 @@ impl Play for WordType {
         let wpm = COUNT as f32 / (timer.duration().unwrap().as_secs_f32() / 60.0);
 
         println!(
-            "\nYou typed correctly {} out of {} words\nWPM: {}\n",
-            correct_count, COUNT, wpm
+            "\nYou typed correctly {correct_count} out of {COUNT} words\nWPM: {wpm}\n"
         );
     }
 }

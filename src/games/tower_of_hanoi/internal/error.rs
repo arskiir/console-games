@@ -9,7 +9,7 @@ pub(super) struct ParseDiskMoveError {
 impl ParseDiskMoveError {
     pub(super) fn new(pole_index: usize) -> Self {
         ParseDiskMoveError {
-            message: format!("Pole {} not found", pole_index),
+            message: format!("Pole {pole_index} not found"),
         }
     }
 }

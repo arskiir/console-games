@@ -29,12 +29,12 @@ impl FourInALine {
         for row in self.table.iter() {
             print!("|");
             for spot in row {
-                print!(" {} |", spot);
+                print!(" {spot} |");
             }
             println!();
         }
         for i in 1..=self.col_count() {
-            print!("  {} ", i);
+            print!("  {i} ");
         }
         println!();
     }

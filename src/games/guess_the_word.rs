@@ -28,7 +28,7 @@ impl Play for GuessTheWord {
             // print the current game state
             for c in word.chars() {
                 if guessed_chars.contains(&c) || c == ' ' {
-                    print!("{}", c);
+                    print!("{c}");
                 } else {
                     print!("_")
                 }
@@ -39,7 +39,7 @@ impl Play for GuessTheWord {
                 if guessed_chars.contains(&c) {
                     print!("_")
                 } else {
-                    print!("{}", c);
+                    print!("{c}");
                 }
                 print!(" ");
             }
@@ -70,11 +70,11 @@ impl Play for GuessTheWord {
 
             // check for win conditions
             if unique_chars.is_empty() {
-                println!("You win!\nThe word is: {}\n", word);
+                println!("You win!\nThe word is: {word}\n");
                 break;
             }
             if guess_left == 0 {
-                println!("You lose!\nThe word is: {}\n", word);
+                println!("You lose!\nThe word is: {word}\n");
                 break;
             }
 
