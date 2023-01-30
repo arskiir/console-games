@@ -5,17 +5,6 @@ A hobby project for console games. New games are coming, hopefully 🙂🙂🙂.
 Or you want to write some Rust? Help me out by adding a game of your choice!!!  
 See [Contribution](#contribution) section for more details.
 
-## Usage
-
-```rust
-use console_games::GameCenter;
-
-fn main() {
-    GameCenter::enter();
-}
-
-```
-
 ## Games
 
 List of available games:
@@ -25,6 +14,29 @@ List of available games:
 - Word Type
 - Four in A Line
 - Tower of Hanoi
+
+## Usage
+
+```bash
+cargo install console-games
+```
+
+then run
+
+```bash
+console-games
+```
+
+### Or as a library
+
+```rust
+use console_games::GameCenter;
+
+fn main() {
+    GameCenter::enter();
+}
+
+```
 
 ### To run an individual game
 
