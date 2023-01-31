@@ -1,6 +1,8 @@
 use std::io::stdin;
 use std::time::{Duration, Instant};
 
+use random_number::random;
+
 pub fn get_char_input() -> Option<char> {
     let mut input = String::new();
     while input.is_empty() {
@@ -36,4 +38,9 @@ impl TimeCounter {
             _ => None,
         }
     }
+}
+
+pub fn probability(percent: u8) -> bool {
+    assert!(percent <= 100);
+    random!(..=100) < percent
 }

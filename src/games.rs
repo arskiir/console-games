@@ -8,3 +8,5 @@ mod four_in_a_line;
 pub use four_in_a_line::*;
 mod tower_of_hanoi;
 pub use tower_of_hanoi::*;
+mod mine_sweeper;
+pub use mine_sweeper::*;

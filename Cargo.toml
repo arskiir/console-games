@@ -13,3 +13,4 @@ keywords = ["game", "console"]
 console = "0.15.5"
 eff-wordlist = "1.0.2"
 rand = "0.8.5"
+random-number = "0.1.8"
