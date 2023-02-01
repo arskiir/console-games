@@ -14,6 +14,7 @@ List of available games:
 - Word Type
 - Four in A Line
 - Tower of Hanoi
+- Minesweeper
 
 ## Usage
 
