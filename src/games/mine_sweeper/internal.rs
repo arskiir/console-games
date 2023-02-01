@@ -11,7 +11,6 @@ const COORD_SYMBOLS: [char; 35] = [
     'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
 const MINE: &str = "⊛";
-const HIDDEN: &str = "◼";
 const FLAGGED: &str = "⚑";
 
 pub struct MineSweeper {
@@ -71,9 +70,13 @@ impl MineSweeper {
         loop {
             term.clear_screen().expect("Failed to clear screen");
             self.show_remaining_flags();
+            println!();
             self.print_field();
 
-            let (x, y, flag) = self.prompt_char_coord();
+            let Some((x, y, flag)) = self.prompt_char_coord() else {
+                println!("Invalid coordinates");
+                continue;
+            };
             let Some((x, y)) = self.find_coord_indices(x, y) else {
                 term.clear_screen().expect("Failed to clear screen");
                 println!("Invalid coordinates");
@@ -101,7 +104,7 @@ impl MineSweeper {
 
             if cell.is_mine() {
                 term.clear_screen().expect("Failed to clear screen");
-                self.reveal_all();
+                self.reveal_all_mines();
                 self.print_field();
                 println!("You lose!");
                 break;
@@ -120,31 +123,27 @@ impl MineSweeper {
     }
 
     fn print_field(&self) {
-        for (_y, row) in self.field.iter().enumerate() {
+        for (y, row) in self.field.iter().enumerate() {
             // print y coord symbol
-            print!("{} ", COORD_SYMBOLS[_y]);
+            let y_sym = COORD_SYMBOLS[y];
 
-            for (_x, cell) in row.iter().enumerate() {
+            for (x, cell) in row.iter().enumerate() {
+                let x_sym = COORD_SYMBOLS[x];
                 if cell.is_revealed() {
                     if cell.is_mine() {
-                        print!("{} ", MINE);
+                        print!(" {} ", style(MINE).color256(208));
                     } else {
-                        print!("{} ", self.colored_number(cell.adjacent_count()));
+                        print!(" {} ", self.colored_number(cell.adjacent_count()));
                     }
                 } else if cell.is_flagged() {
-                    print!("{} ", style(FLAGGED).red());
+                    print!(" {} ", style(FLAGGED).red());
                 } else {
-                    print!("{} ", HIDDEN);
+                    print!("{}{} ", x_sym, y_sym);
                 }
             }
             println!();
         }
 
-        // print x coord symbols
-        print!("  ");
-        for x in 0..self.size {
-            print!("{} ", COORD_SYMBOLS[x]);
-        }
         println!();
     }
 
@@ -159,39 +158,28 @@ impl MineSweeper {
             n @ 6 => style(n).color256(45),
             n @ 7 => style(n).yellow(),
             n @ 8 => style(n).color256(166),
-            n @ _ => style(n).hidden(),
+            n => style(n).hidden(),
         }
     }
 
-    fn prompt_char_coord(&self) -> (char, char, bool) {
-        print!("Enter xy: ");
+    fn prompt_char_coord(&self) -> Option<(char, char, bool)> {
+        print!("Enter xy or fxy: ");
         stdout().flush().expect("Flush failed");
         let mut input = String::new();
         std::io::stdin()
             .read_line(&mut input)
             .expect("Failed to read line");
-        let mut chars = input.chars();
-        let x_or_f = chars.next();
-        if x_or_f == Some('f') {
-            let x = chars.next();
-            let y = chars.next();
-            match (x, y, x_or_f) {
-                (Some(x), Some(y), Some('f')) => (x, y, true),
-                _ => {
-                    println!("Invalid coordinates");
-                    self.prompt_char_coord()
-                }
-            }
-        } else {
-            let y = chars.next();
-            match (x_or_f, y) {
-                (Some(x), Some(y)) => (x, y, false),
-                _ => {
-                    println!("Invalid coordinates");
-                    self.prompt_char_coord()
-                }
-            }
+        let input: Vec<char> = input.trim().chars().take(3).collect();
+        if input.len() < 2 {
+            return None;
         }
+        if input.len() == 2 {
+            return Some((input[0], input[1], false));
+        }
+        if input[0] != 'f' {
+            return None;
+        }
+        Some((input[1], input[2], true))
     }
 
     fn find_coord_indices(&self, _x: char, _y: char) -> Option<(usize, usize)> {
@@ -265,8 +253,14 @@ impl MineSweeper {
         println!("Remaining flags: {}", self.mines_count - self.placed_flags);
     }
 
-    fn reveal_all(&mut self) {
-        self.field.iter_mut().flatten().for_each(Cell::reveal);
+    fn reveal_all_mines(&mut self) {
+        self.field
+            .iter_mut()
+            .flatten()
+            .filter(|c| c.is_mine())
+            .for_each(|c| {
+                c.reveal();
+            });
     }
 }
 
