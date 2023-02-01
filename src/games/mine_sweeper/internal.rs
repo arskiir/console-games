@@ -129,13 +129,13 @@ impl MineSweeper {
 
             for (x, cell) in row.iter().enumerate() {
                 let x_sym = COORD_SYMBOLS[x];
-                let highlight_mine = if let Some((last_x, last_y)) = last_coord {
-                    last_x == x && last_y == y
-                } else {
-                    false
-                };
                 if cell.is_revealed() {
                     if cell.is_mine() {
+                        let highlight_mine = if let Some((last_x, last_y)) = last_coord {
+                            last_x == x && last_y == y
+                        } else {
+                            false
+                        };
                         print!(
                             " {} ",
                             if highlight_mine {
