@@ -74,19 +74,15 @@ impl MineSweeper {
             self.print_field(None);
 
             let Some((x, y, flag)) = self.prompt_char_coord() else {
-                println!("Invalid coordinates");
                 continue;
             };
             let Some((x, y)) = self.find_coord_indices(x, y) else {
-                term.clear_screen().expect("Failed to clear screen");
-                println!("Invalid coordinates");
                 continue;
             };
 
             let cell = &mut self.field[y][x];
 
             if cell.is_revealed() {
-                term.clear_screen().expect("Failed to clear screen");
                 continue;
             }
 
