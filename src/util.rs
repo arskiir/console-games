@@ -41,6 +41,6 @@ impl TimeCounter {
 }
 
 pub fn probability(percent: f32) -> bool {
-    assert!(0.0 <= percent && percent <= 100.0);
+    assert!((0.0..=100.0).contains(&percent));
     random!(..=100.0) < percent
 }
