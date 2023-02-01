@@ -31,7 +31,7 @@ impl MineSweeper {
         for y in 0..size {
             let mut row = Vec::with_capacity(size);
             for x in 0..size {
-                let is_mine = probability(20);
+                let is_mine = probability(20.0);
                 if is_mine {
                     mines_count += 1;
                     mine_locations[y][x] = true;

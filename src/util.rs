@@ -40,7 +40,7 @@ impl TimeCounter {
     }
 }
 
-pub fn probability(percent: u8) -> bool {
-    assert!(percent <= 100);
-    random!(..=100) < percent
+pub fn probability(percent: f32) -> bool {
+    assert!(0.0 <= percent && percent <= 100.0);
+    random!(..=100.0) < percent
 }
