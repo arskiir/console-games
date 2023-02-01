@@ -16,18 +16,23 @@ const HIDDEN: &str = "◼";
 pub struct MineSweeper {
     field: Vec<Vec<Cell>>,
     size: usize,
+    mines_count: usize,
+    revealed_count: usize,
+    cell_count: usize,
 }
 
 impl MineSweeper {
     pub fn new(size: usize) -> Self {
         let mut field = Vec::with_capacity(size);
         let mut mine_locations = vec![vec![false; size]; size];
+        let mut mines_count = 0;
 
         for y in 0..size {
             let mut row = Vec::with_capacity(size);
             for x in 0..size {
                 let is_mine = probability(20);
                 if is_mine {
+                    mines_count += 1;
                     mine_locations[y][x] = true;
                 }
                 row.push(Cell::new(is_mine));
@@ -43,13 +48,19 @@ impl MineSweeper {
                 }
                 let adjacent_count = Self::get_adjacent_coord(size, x, y)
                     .iter()
-                    .map(|(x, y)| u8::from(mine_locations[*y][*x]))
-                    .sum();
+                    .filter(|(x, y)| mine_locations[*y][*x])
+                    .count();
                 cell.set_adjacent_count(adjacent_count);
             }
         }
 
-        Self { field, size }
+        Self {
+            field,
+            size,
+            mines_count,
+            revealed_count: 0,
+            cell_count: size * size,
+        }
     }
 
     pub fn start(&mut self) {
@@ -165,7 +176,7 @@ impl MineSweeper {
     }
 
     fn is_won(&self) -> bool {
-        todo!()
+        self.revealed_count + self.mines_count == self.cell_count
     }
 }
 

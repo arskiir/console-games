@@ -1,7 +1,7 @@
 pub struct Cell {
     is_mine: bool,
     is_revealed: bool,
-    adjacent_count: u8,
+    adjacent_count: usize,
 }
 
 impl Cell {
@@ -21,11 +21,11 @@ impl Cell {
         self.is_revealed
     }
 
-    pub fn adjacent_count(&self) -> u8 {
+    pub fn adjacent_count(&self) -> usize {
         self.adjacent_count
     }
 
-    pub fn set_adjacent_count(&mut self, adjacent_count: u8) {
+    pub fn set_adjacent_count(&mut self, adjacent_count: usize) {
         self.adjacent_count = adjacent_count;
     }
 }
