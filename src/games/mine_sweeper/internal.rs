@@ -57,16 +57,41 @@ impl MineSweeper {
         loop {
             self.print_field();
             let (x, y) = self.prompt_char_coord();
-            let Some((_x, _y)) = self.find_coord(x, y) else {
+            let Some((x, y)) = self.find_coord_indices(x, y) else {
                 term.clear_screen().expect("Failed to clear screen");
                 println!("Invalid coordinates");
                 continue;
             };
+
+            let cell = &self.field[y][x];
+
+            if cell.is_revealed() {
+                term.clear_screen().expect("Failed to clear screen");
+                continue;
+            }
+
+            if cell.is_mine() {
+                term.clear_screen().expect("Failed to clear screen");
+                self.print_field();
+                println!("You lose!");
+                break;
+            }
+
+            self.reveal(x, y);
+
+            if self.is_won() {
+                term.clear_screen().expect("Failed to clear screen");
+                self.print_field();
+                println!("You win!");
+                break;
+            }
         }
     }
 
     fn print_field(&self) {
         for (_y, row) in self.field.iter().enumerate() {
+            // print y coord symbol
+            print!("{} ", COORD_SYMBOLS[_y]);
             for (_x, cell) in row.iter().enumerate() {
                 if cell.is_revealed() {
                     if cell.is_mine() {
@@ -80,6 +105,12 @@ impl MineSweeper {
             }
             println!();
         }
+        // print x coord symbols
+        print!("  ");
+        for x in 0..self.size {
+            print!("{} ", COORD_SYMBOLS[x]);
+        }
+        println!();
     }
 
     fn prompt_char_coord(&self) -> (char, char) {
@@ -99,7 +130,7 @@ impl MineSweeper {
         }
     }
 
-    fn find_coord(&self, _x: char, _y: char) -> Option<(usize, usize)> {
+    fn find_coord_indices(&self, _x: char, _y: char) -> Option<(usize, usize)> {
         todo!()
     }
 
@@ -127,6 +158,14 @@ impl MineSweeper {
             Some((x, y))
         })
         .collect()
+    }
+
+    fn reveal(&self, _x: usize, _y: usize) {
+        todo!()
+    }
+
+    fn is_won(&self) -> bool {
+        todo!()
     }
 }
 
