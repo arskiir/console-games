@@ -28,13 +28,13 @@ impl MineSweeper {
         let mut mine_locations = vec![vec![false; size]; size];
         let mut mines_count = 0;
 
-        for y in 0..size {
+        for row_mines_loc in mine_locations.iter_mut() {
             let mut row = Vec::with_capacity(size);
-            for x in 0..size {
+            for mine_loc in row_mines_loc.iter_mut() {
                 let is_mine = probability(20.0);
                 if is_mine {
                     mines_count += 1;
-                    mine_locations[y][x] = true;
+                    *mine_loc = true;
                 }
                 row.push(Cell::new(is_mine));
             }
@@ -71,7 +71,7 @@ impl MineSweeper {
             term.clear_screen().expect("Failed to clear screen");
             self.show_remaining_flags();
             println!();
-            self.print_field();
+            self.print_field(None);
 
             let Some((x, y, flag)) = self.prompt_char_coord() else {
                 println!("Invalid coordinates");
@@ -105,7 +105,7 @@ impl MineSweeper {
             if cell.is_mine() {
                 term.clear_screen().expect("Failed to clear screen");
                 self.reveal_all_mines();
-                self.print_field();
+                self.print_field(Some((x, y)));
                 println!("You lose!");
                 break;
             }
@@ -114,7 +114,7 @@ impl MineSweeper {
 
             if self.is_won() {
                 term.clear_screen().expect("Failed to clear screen");
-                self.print_field();
+                self.print_field(None);
                 println!("You win!");
                 break;
             }
@@ -122,16 +122,28 @@ impl MineSweeper {
         println!();
     }
 
-    fn print_field(&self) {
+    fn print_field(&self, last_coord: Option<(usize, usize)>) {
         for (y, row) in self.field.iter().enumerate() {
             // print y coord symbol
             let y_sym = COORD_SYMBOLS[y];
 
             for (x, cell) in row.iter().enumerate() {
                 let x_sym = COORD_SYMBOLS[x];
+                let highlight_mine = if let Some((last_x, last_y)) = last_coord {
+                    last_x == x && last_y == y
+                } else {
+                    false
+                };
                 if cell.is_revealed() {
                     if cell.is_mine() {
-                        print!(" {} ", style(MINE).color256(208));
+                        print!(
+                            " {} ",
+                            if highlight_mine {
+                                style(MINE).yellow()
+                            } else {
+                                style(MINE).color256(208)
+                            }
+                        );
                     } else {
                         print!(" {} ", self.colored_number(cell.adjacent_count()));
                     }
