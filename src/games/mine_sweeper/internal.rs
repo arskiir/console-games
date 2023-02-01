@@ -11,7 +11,7 @@ const COORD_SYMBOLS: [char; 35] = [
     'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
 const MINE: &str = "⊛";
-const EMPTY: &str = " ";
+const HIDDEN: &str = "◼";
 
 pub struct MineSweeper {
     field: Vec<Vec<Cell>>,
@@ -68,11 +68,14 @@ impl MineSweeper {
     fn print_field(&self) {
         for (_y, row) in self.field.iter().enumerate() {
             for (_x, cell) in row.iter().enumerate() {
-                // if cell.is_revealed() {
-                if cell.is_mine() {
-                    print!("{} ", MINE);
+                if cell.is_revealed() {
+                    if cell.is_mine() {
+                        print!("{} ", MINE);
+                    } else {
+                        print!("{} ", cell.adjacent_count());
+                    }
                 } else {
-                    print!("{} ", cell.adjacent_count());
+                    print!("{} ", HIDDEN);
                 }
             }
             println!();
