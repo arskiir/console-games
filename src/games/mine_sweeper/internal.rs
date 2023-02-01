@@ -10,26 +10,46 @@ const COORD_SYMBOLS: [char; 35] = [
     '1', '2', '3', '4', '5', '6', '7', '8', '9', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'i', 'j',
     'k', 'l', 'm', 'n', 'o', 'p', 'q', 'r', 's', 't', 'u', 'v', 'w', 'x', 'y', 'z',
 ];
-const MINE: char = 'X';
-const EMPTY: char = ' ';
+const MINE: &str = "⊛";
+const EMPTY: &str = " ";
 
 pub struct MineSweeper {
     field: Vec<Vec<Cell>>,
+    size: usize,
 }
 
 impl MineSweeper {
     pub fn new(size: usize) -> Self {
         let mut field = Vec::with_capacity(size);
+        let mut mine_locations = vec![vec![false; size]; size];
 
-        for _ in 0..size {
+        for y in 0..size {
             let mut row = Vec::with_capacity(size);
-            for _ in 0..size {
-                row.push(Cell::new(probability(20)));
+            for x in 0..size {
+                let is_mine = probability(20);
+                if is_mine {
+                    mine_locations[y][x] = true;
+                }
+                row.push(Cell::new(is_mine));
             }
             field.push(row);
         }
 
-        Self { field }
+        // count adjacent mines
+        for (y, row) in field.iter_mut().enumerate() {
+            for (x, cell) in row.iter_mut().enumerate() {
+                if cell.is_mine() {
+                    continue;
+                }
+                let adjacent_count = Self::get_adjacent_coord(size, x, y)
+                    .iter()
+                    .map(|(x, y)| u8::from(mine_locations[*y][*x]))
+                    .sum();
+                cell.set_adjacent_count(adjacent_count);
+            }
+        }
+
+        Self { field, size }
     }
 
     pub fn start(&mut self) {
@@ -37,7 +57,7 @@ impl MineSweeper {
         loop {
             self.print_field();
             let (x, y) = self.prompt_char_coord();
-            let Some((x, y)) = self.find_coord(x, y) else {
+            let Some((_x, _y)) = self.find_coord(x, y) else {
                 term.clear_screen().expect("Failed to clear screen");
                 println!("Invalid coordinates");
                 continue;
@@ -45,7 +65,19 @@ impl MineSweeper {
         }
     }
 
-    fn print_field(&self) {}
+    fn print_field(&self) {
+        for (_y, row) in self.field.iter().enumerate() {
+            for (_x, cell) in row.iter().enumerate() {
+                // if cell.is_revealed() {
+                if cell.is_mine() {
+                    print!("{} ", MINE);
+                } else {
+                    print!("{} ", cell.adjacent_count());
+                }
+            }
+            println!();
+        }
+    }
 
     fn prompt_char_coord(&self) -> (char, char) {
         print!("Enter xy: ");
@@ -64,8 +96,34 @@ impl MineSweeper {
         }
     }
 
-    fn find_coord(&self, x: char, y: char) -> Option<(usize, usize)> {
+    fn find_coord(&self, _x: char, _y: char) -> Option<(usize, usize)> {
         todo!()
+    }
+
+    fn get_adjacent_coord(size: usize, x: usize, y: usize) -> Vec<(usize, usize)> {
+        [
+            (x as i32 - 1, y as i32 - 1),
+            (x as i32, y as i32 - 1),
+            (x as i32 + 1, y as i32 - 1),
+            (x as i32 - 1, y as i32),
+            (x as i32 + 1, y as i32),
+            (x as i32 - 1, y as i32 + 1),
+            (x as i32, y as i32 + 1),
+            (x as i32 + 1, y as i32 + 1),
+        ]
+        .iter()
+        .filter_map(|(x, y)| {
+            if *x < 0 || *y < 0 {
+                return None;
+            }
+            let x = *x as usize;
+            let y = *y as usize;
+            if x >= size || y >= size {
+                return None;
+            }
+            Some((x, y))
+        })
+        .collect()
     }
 }
 
