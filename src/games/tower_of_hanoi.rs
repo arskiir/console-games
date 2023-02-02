@@ -1,6 +1,6 @@
 use self::internal::PromptDiskMoveResult;
 use crate::Play;
-use console::Term;
+use console::{style, Term};
 use std::io::{stdin, stdout, Write};
 mod internal;
 
@@ -26,6 +26,11 @@ impl TowerOfHanoi {
 impl Play for TowerOfHanoi {
     fn name(&self) -> &'static str {
         "Tower of Hanoi"
+    }
+
+    fn print_intro(&self) {
+        println!("Welcome to {}!\n", style(self.name()).green());
+        println!("The objective of the game is to move all disks from the leftmost tower to the rightmost tower.\nYou cannot place a larger disk on top of a smaller disk.\n");
     }
 
     fn start(&self) {
