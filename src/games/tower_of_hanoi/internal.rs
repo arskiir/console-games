@@ -91,12 +91,24 @@ impl TowerOfHanoi {
     /// move a disk from a pole to another pole
     pub(super) fn move_disk(&mut self, from: usize, to: usize) -> Result<(), &'static str> {
         let poles = self.poles.as_mut();
+
+        let Some(disk_from) = poles[from].disks.last() else {
+            return Err("This pole has no disk");
+        };
+
+        let pole_to_top_disk = poles[to].disks.last();
+
+        if let Some(top_disk) = pole_to_top_disk {
+            if disk_from.size > top_disk.size {
+                return Err("You can't move a bigger disk on a smaller disk");
+            }
+        }
+
         if let Some(disk) = poles[from].disks.pop() {
             poles[to].disks.push(disk);
-            Ok(())
-        } else {
-            Err("This pole has no disk")
         }
+
+        Ok(())
     }
 
     pub(super) fn win(&self) -> bool {

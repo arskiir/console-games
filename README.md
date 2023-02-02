@@ -13,7 +13,7 @@ List of available games:
 - Guess the Number
 - Word Type
 - Four in A Line
-- ~~Tower of Hanoi~~ fixing
+- Tower of Hanoi
 - Minesweeper
 
 ## Usage
