@@ -422,20 +422,17 @@ impl Checkers {
         if enemy_locations.get(&(x, y)).is_some() {
             // encountered an enemy checker
             // check if there is a checker in the next cell that the current checker can jump over
-            println!("hey");
             let Some(next_cell_pos) = next_cell_pos else {
                 // there is no next cell
                 return FindPossibleMoveResult {final_pos: *last_possible_move_loc, stop: true};
             };
 
-            println!("yo");
             if self.is_cell_empty(&next_cell_pos) {
                 return FindPossibleMoveResult {
                     final_pos: Some(next_cell_pos),
                     stop: true,
                 };
             }
-            println!("usss");
 
             return FindPossibleMoveResult {
                 final_pos: *last_possible_move_loc,
@@ -472,10 +469,6 @@ impl Checkers {
         let next_cell_loc = self.is_cell_in_any_path(&pos).then_some(pos);
         next_cell_loc
     }
-
-    // pub(crate) fn get_checker(&self, pos: (usize, usize)) -> Option {
-
-    // }
 }
 
 #[derive(Debug)]
