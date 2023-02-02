@@ -10,3 +10,5 @@ mod tower_of_hanoi;
 pub use tower_of_hanoi::*;
 mod mine_sweeper;
 pub use mine_sweeper::*;
+mod checkers;
+pub use checkers::*;
