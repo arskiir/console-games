@@ -11,7 +11,7 @@ const COORD_SYMBOLS: [char; 35] = [
     't', 'u', 'v', 'w', 'x', 'y', 'z', '1', '2', '3', '4', '5', '6', '7', '8', '9',
 ];
 const MINE: &str = "⊛";
-const FLAGGED: &str = "⚑";
+const FLAG: &str = "⚑";
 
 pub struct MineSweeper {
     field: Vec<Vec<Cell>>,
@@ -98,6 +98,10 @@ impl MineSweeper {
                 continue;
             }
 
+            if cell.is_flagged() {
+                continue;
+            }
+
             if cell.is_mine() {
                 term.clear_screen().expect("Failed to clear screen");
                 self.reveal_all_mines();
@@ -144,7 +148,7 @@ impl MineSweeper {
                         print!(" {} ", self.colored_number(cell.adjacent_count()));
                     }
                 } else if cell.is_flagged() {
-                    print!(" {} ", style(FLAGGED).red());
+                    print!(" {} ", style(FLAG).red());
                 } else {
                     print!("{}{} ", x_sym, y_sym);
                 }
