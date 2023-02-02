@@ -1,5 +1,5 @@
 mod game_center;
-use console::style;
+
 pub use game_center::*;
 pub mod games;
 mod util;
@@ -9,9 +9,9 @@ pub trait Play {
     /// returns the name of the game
     fn name(&self) -> &'static str;
 
-    /// print the game's intro or description before the game starts
-    fn print_intro(&self) {
-        println!("Welcome to {}!\n", style(self.name()).green());
+    /// optionally returns the instructions of the game
+    fn instructions(&self) -> Option<&'static str> {
+        None
     }
 
     /// start the game.

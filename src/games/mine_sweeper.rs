@@ -1,5 +1,5 @@
 use crate::Play;
-use console::{style, Term};
+use console::Term;
 pub struct MineSweeper;
 mod internal;
 
@@ -14,8 +14,7 @@ impl Play for MineSweeper {
         internal::MineSweeper::new(size).start();
     }
 
-    fn print_intro(&self) {
-        println!("Welcome to {}!\n", style(self.name()).green());
-        println!("Enter x and y coordinates to reveal a cell. Enter 'f' before the coordinates to flag a cell.\n");
+    fn instructions(&self) -> Option<&'static str> {
+        Some("Enter x and y coordinates to reveal a cell. Enter 'f' before the coordinates to flag a cell.")
     }
 }

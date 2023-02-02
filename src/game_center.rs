@@ -38,10 +38,16 @@ impl GameCenter {
 
             match games.get_mut(game_idx) {
                 Some(game) => {
-                    term.set_title(game.name());
+                    let name = game.name();
+
+                    term.set_title(name);
                     term.clear_screen().expect("Failed to clear screen");
 
-                    game.print_intro();
+                    println!("Welcome to {}!\n", style(name).green());
+                    if let Some(instructions) = game.instructions() {
+                        println!("{}\n", instructions);
+                    }
+
                     game.start();
                 }
                 None => println!("{}", &game_idx_err_msg),

@@ -42,12 +42,14 @@ fn main() {
 ### To run an individual game
 
 ```rust
-use console_games::{games::GuessTheWord, Play};
+use console_games::{games::MineSweeper, Play};
 
 fn main() {
-    println!("{}", GuessTheWord.name());
-    GuessTheWord.print_intro();
-    GuessTheWord.start();
+    println!("{}", MineSweeper.name());
+    if let Some(instruction) = MineSweeper.instructions() {
+        println!("{}", instruction);
+    };
+    MineSweeper.start();
 }
 
 ```
