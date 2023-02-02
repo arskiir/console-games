@@ -1,5 +1,3 @@
-use console::Term;
-
 use crate::Play;
 
 pub struct Checkers;
@@ -16,24 +14,6 @@ impl Play for Checkers {
     }
 
     fn start(&self) {
-        let mut game = internal::Checkers::new();
-        let term = Term::stdout();
-
-        loop {
-            game.print_board();
-            println!();
-            game.print_turn();
-            let Some(name) = game.prompt_checker_name() else {
-                continue;
-            };
-            // game.make_move(mv);
-            // if game.is_won() {
-            //     term.clear_screen().unwrap();
-            //     game.print_board();
-            //     game.print_winner();
-            //     break;
-            term.clear_screen().unwrap();
-            // }
-        }
+        internal::Checkers::new().start();
     }
 }
