@@ -21,7 +21,7 @@ impl Player {
     }
 }
 
-#[derive(Copy, Clone, Debug)]
+#[derive(Copy, Clone, Debug, PartialEq)]
 pub enum Direction {
     UpLeft,
     UpRight,
@@ -125,27 +125,27 @@ impl Checkers {
             self.print_turn();
 
             let Some(name) = self.prompt_checker_name() else {
-                term.clear_screen().unwrap();
+                // term.clear_screen().unwrap();
                 println!("checker name is required. Try again.");
                 continue;
             };
             let Some(pos) = self.find_checker_position(name) else {
-                term.clear_screen().unwrap();
+                // term.clear_screen().unwrap();
                 println!("cannot find checker with name '{}'. Try again.", name);
                 continue;
             };
             let Some(checker) = self.find_checker(&pos) else {
-                term.clear_screen().unwrap();
+                // term.clear_screen().unwrap();
                 println!("cannot find checker at position {:?}. Try again.", pos);
                 continue;
             };
             if checker.owner != self.turn_of {
-                term.clear_screen().unwrap();
+                // term.clear_screen().unwrap();
                 println!("it is not {}'s turn. Try again.", self.turn_of.name());
                 continue;
             };
 
-            self.set_possible_moves(&pos);
+            self.set_possible_moves(&pos, checker.king);
             if self.possible_moves.is_empty() {
                 term.clear_screen().unwrap();
                 println!(
@@ -155,16 +155,16 @@ impl Checkers {
                 continue;
             }
 
-            term.clear_screen().unwrap();
+            // term.clear_screen().unwrap();
             self.print_board();
             println!();
 
-            let Ok(_dir) = self.prompt_direction() else {
+            let Ok(dir) = self.prompt_direction() else {
                 term.clear_screen().unwrap();
                 println!("invalid direction. Try again.");
                 continue;
             };
-            // self.make_move(mv);
+            self.make_move(dir, &pos);
             // if self.is_won() {
             //     term.clear_screen().unwrap();
             //     self.print_board();
@@ -176,7 +176,7 @@ impl Checkers {
                 Player::Alphabet => Player::Math,
             };
 
-            term.clear_screen().unwrap();
+            // term.clear_screen().unwrap();
         }
     }
 
@@ -269,7 +269,7 @@ impl Checkers {
             && self.is_cell_in_any_path(pos)
     }
 
-    fn set_possible_moves(&mut self, pos: &(usize, usize)) {
+    fn set_possible_moves(&mut self, pos: &(usize, usize), king: bool) {
         let current_player_locations = match self.turn_of {
             Player::Math => &self.math_locations,
             Player::Alphabet => &self.alphabet_locations,
@@ -301,16 +301,25 @@ impl Checkers {
 
             println!("({x}, {y}), next_cell_pos: {:?}", next_cell_pos);
 
-            let FindPossibleMoveResult { final_pos, stop } = self.find_possible_move_pos(
+            let FindPossibleMoveResult {
+                final_pos,
+                stop,
+                jumped_over_enemy_pos,
+            } = self.find_possible_move_pos(
                 enemy_locations,
                 x,
                 y,
                 next_cell_pos,
                 current_player_locations,
                 &mut last_possible_move_loc,
+                king,
             );
             if let Some(final_pos) = final_pos {
-                self.possible_moves.push(PossibleMove { dir, final_pos });
+                self.possible_moves.push(PossibleMove {
+                    dir,
+                    final_pos,
+                    jumped_over_enemy_pos,
+                });
             }
             if stop {
                 break;
@@ -329,16 +338,25 @@ impl Checkers {
             };
             let next_cell_pos = self.verify_cell_pos((x + 1, y + 1));
 
-            let FindPossibleMoveResult { final_pos, stop } = self.find_possible_move_pos(
+            let FindPossibleMoveResult {
+                final_pos,
+                stop,
+                jumped_over_enemy_pos,
+            } = self.find_possible_move_pos(
                 enemy_locations,
                 x,
                 y,
                 next_cell_pos,
                 current_player_locations,
                 &mut last_possible_move_loc,
+                king,
             );
             if let Some(final_pos) = final_pos {
-                self.possible_moves.push(PossibleMove { dir, final_pos });
+                self.possible_moves.push(PossibleMove {
+                    dir,
+                    final_pos,
+                    jumped_over_enemy_pos,
+                });
             }
             if stop {
                 break;
@@ -361,16 +379,25 @@ impl Checkers {
                 _ => None,
             };
 
-            let FindPossibleMoveResult { final_pos, stop } = self.find_possible_move_pos(
+            let FindPossibleMoveResult {
+                final_pos,
+                stop,
+                jumped_over_enemy_pos,
+            } = self.find_possible_move_pos(
                 enemy_locations,
                 x,
                 y,
                 next_cell_pos,
                 current_player_locations,
                 &mut last_possible_move_loc,
+                king,
             );
             if let Some(final_pos) = final_pos {
-                self.possible_moves.push(PossibleMove { dir, final_pos });
+                self.possible_moves.push(PossibleMove {
+                    dir,
+                    final_pos,
+                    jumped_over_enemy_pos,
+                });
             }
             if stop {
                 break;
@@ -393,16 +420,25 @@ impl Checkers {
                 None => None,
             };
 
-            let FindPossibleMoveResult { final_pos, stop } = self.find_possible_move_pos(
+            let FindPossibleMoveResult {
+                final_pos,
+                stop,
+                jumped_over_enemy_pos,
+            } = self.find_possible_move_pos(
                 enemy_locations,
                 x,
                 y,
                 next_cell_pos,
                 current_player_locations,
                 &mut last_possible_move_loc,
+                king,
             );
             if let Some(final_pos) = final_pos {
-                self.possible_moves.push(PossibleMove { dir, final_pos });
+                self.possible_moves.push(PossibleMove {
+                    dir,
+                    final_pos,
+                    jumped_over_enemy_pos,
+                });
             }
             if stop {
                 break;
@@ -418,50 +454,43 @@ impl Checkers {
         next_cell_pos: Option<(usize, usize)>,
         current_player_locations: &BTreeMap<(usize, usize), Checker>,
         last_possible_move_loc: &mut Option<(usize, usize)>,
+        king: bool,
     ) -> FindPossibleMoveResult {
+        let result = FindPossibleMoveResult::new();
         if enemy_locations.get(&(x, y)).is_some() {
             // encountered an enemy checker
             // check if there is a checker in the next cell that the current checker can jump over
             let Some(next_cell_pos) = next_cell_pos else {
                 // there is no next cell
-                return FindPossibleMoveResult {final_pos: *last_possible_move_loc, stop: true};
+                return result.final_pos(*last_possible_move_loc);
             };
 
             if self.is_cell_empty(&next_cell_pos) {
-                return FindPossibleMoveResult {
-                    final_pos: Some(next_cell_pos),
-                    stop: true,
-                };
+                return result
+                    .final_pos(Some(next_cell_pos))
+                    .jump_over_pos(Some((x, y)));
             }
 
-            return FindPossibleMoveResult {
-                final_pos: *last_possible_move_loc,
-                stop: true,
-            };
+            return result.final_pos(*last_possible_move_loc);
         } else if let Some(_checker) = current_player_locations.get(&(x, y)) {
             // encountered a checker on the same team
-            return FindPossibleMoveResult {
-                final_pos: *last_possible_move_loc,
-                stop: true,
-            };
+            return result.final_pos(*last_possible_move_loc);
         } else {
+            if !king {
+                return result.final_pos(Some((x, y)));
+            }
+
             // this is an empty cell
             // if next cell is out of bounds, then this is definitely the possible move
             if next_cell_pos.is_none() {
-                return FindPossibleMoveResult {
-                    final_pos: Some((x, y)),
-                    stop: true,
-                };
+                return result.final_pos(Some((x, y)));
             }
 
             *last_possible_move_loc = Some((x, y));
             println!("has last possible move loc: {:?}", last_possible_move_loc);
         }
 
-        FindPossibleMoveResult {
-            final_pos: None,
-            stop: false,
-        }
+        result.go_on()
     }
 
     /// return some if the next cell is in any path
@@ -469,15 +498,68 @@ impl Checkers {
         let next_cell_loc = self.is_cell_in_any_path(&pos).then_some(pos);
         next_cell_loc
     }
+
+    fn make_move(&mut self, dir: Direction, from: &(usize, usize)) {
+        let from_locations = match self.turn_of {
+            Player::Alphabet => &mut self.alphabet_locations,
+            Player::Math => &mut self.math_locations,
+        };
+        let checker = from_locations.remove(from).unwrap();
+        dbg!(&self.possible_moves);
+        let PossibleMove {
+            final_pos,
+            jumped_over_enemy_pos,
+            dir: _,
+        } = self
+            .possible_moves
+            .iter()
+            .find(|possible_move| possible_move.dir == dir)
+            .unwrap();
+        from_locations.insert(*final_pos, checker);
+        if let Some(jumped_over_enemy_pos) = jumped_over_enemy_pos {
+            match self.turn_of {
+                Player::Math => &mut self.alphabet_locations,
+                Player::Alphabet => &mut self.math_locations,
+            }
+            .remove(jumped_over_enemy_pos);
+        }
+    }
 }
 
 #[derive(Debug)]
 struct PossibleMove {
     dir: Direction,
     final_pos: (usize, usize),
+    jumped_over_enemy_pos: Option<(usize, usize)>,
 }
 
 struct FindPossibleMoveResult {
     final_pos: Option<(usize, usize)>,
     stop: bool,
+    jumped_over_enemy_pos: Option<(usize, usize)>,
+}
+
+impl FindPossibleMoveResult {
+    fn new() -> Self {
+        Self {
+            final_pos: None,
+            stop: true,
+            jumped_over_enemy_pos: None,
+        }
+    }
+
+    fn final_pos(mut self, final_pos: Option<(usize, usize)>) -> Self {
+        self.final_pos = final_pos;
+        self
+    }
+
+    fn go_on(mut self) -> Self {
+        self.stop = false;
+        self
+    }
+
+    fn jump_over_pos(mut self, jumped_over_enemy_pos: Option<(usize, usize)>) -> Self {
+        self.jumped_over_enemy_pos = jumped_over_enemy_pos;
+        self
+    }
 }
