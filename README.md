@@ -2,9 +2,6 @@
 
 A hobby project for console games. New games are coming, hopefully 🙂🙂🙂.
 
-Or you want to write some Rust? Help me out by adding a game of your choice!!!  
-See [Contribution](#contribution) section for more details.
-
 ## Games
 
 List of available games:
